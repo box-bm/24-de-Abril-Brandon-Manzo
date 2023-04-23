@@ -7,6 +7,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import ReplayIcon from '@mui/icons-material/Replay';
+import { axiosInstance } from '../../config/axios';
 
 const BasePage = (props) => {
   const { columns, api, filterFunction } = props;
@@ -24,8 +25,8 @@ const BasePage = (props) => {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const response = await fetch(api)
-    const data = await response.json()
+    const response = await axiosInstance.get(api)
+    const data = response.data;
     setData(data);
     setLoading(false);
   }, [api])

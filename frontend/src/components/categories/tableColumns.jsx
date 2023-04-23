@@ -1,5 +1,6 @@
 import moment from "moment";
 import Switch from '@mui/material/Switch';
+import { axiosInstance } from "../../config/axios";
 
 export default [
   { headerName: "Categoría", field: "categoria", minWidth: 160, maxWidth: 500 },
@@ -28,7 +29,7 @@ export default [
       return (
         <Switch
           defaultChecked={row.value}
-          onChange={async () => await fetch(`http://localhost:3000/api/categories/${row.id}/disactivate`, { method: "put" })}
+          onChange={async () => await axiosInstance(`/api/categories/${row.id}/disactivate`, { method: "put" })}
         />
       )
     },
