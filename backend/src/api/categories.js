@@ -31,18 +31,28 @@ router.put("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const category = req.body;
-  const createdCategory = await Category.create(category);
-  res.json(createdCategory);
+  try {
+    const category = req.body;
+    const createdCategory = await Category.create(category);
+    res.json(createdCategory);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 router.put("/:id/disactivate", async (req, res) => {
-  const { id } = req.params;
-  const category = await Category.findByPk(id);
-  if (!category) {
-    return res.status(404).send("Category not found");
+  try {
+    const { id } = req.params;
+    const category = await Category.findByPk(id);
+    if (!category) {
+      return res.status(404).send("Category not found");
+    }
+    category.activo = !category.activo;
+    await category.save();
+    res.json(category);
+  } catch (error) {
+    console.error(error);
   }
-  res.json(createdCategory);
 });
 
 export default router;
