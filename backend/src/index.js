@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import { createModels } from "./config/dbModels.js";
 import { initConnection } from "./config/sequelize.js";
 import router from "./api/index.js";
@@ -11,6 +12,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use("/api", router);
 
