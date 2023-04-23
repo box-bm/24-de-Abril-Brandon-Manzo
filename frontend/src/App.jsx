@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Appbar from "./components/layout/appbar"
 import CssBaseline from '@mui/material/CssBaseline';
+import { Container } from "@mui/material";
 
 const App = () => {
   return (
@@ -10,7 +11,9 @@ const App = () => {
         <Appbar />
       </header>
       <main>
-        <Outlet />
+        <Container sx={{ mt: 2 }}>
+          <Outlet />
+        </Container>
       </main>
       <footer></footer>
     </>
