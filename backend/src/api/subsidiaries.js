@@ -26,8 +26,14 @@ router.put("/:id", async (req, res) => {
   if (!subsidiary) {
     return res.status(404).send("Subsidiary not found");
   }
-  await subsidiary.update(data);
-  res.json(createdCategory);
+  subsidiary.nombre = data.nombre;
+  subsidiary.direccion = data.direccion;
+  subsidiary.correo = data.correo;
+  subsidiary.departamento = data.departamento;
+  subsidiary.municipio = data.municipio;
+  subsidiary.telefono = data.telefono;
+  await subsidiary.save();
+  res.json(subsidiary);
 });
 
 router.post("", async (req, res) => {
@@ -38,11 +44,13 @@ router.post("", async (req, res) => {
 
 router.put("/:id/disactivate", async (req, res) => {
   const { id } = req.params;
-  const category = await Subsidiary.findByPk(id);
-  if (!category) {
+  const subsidiary = await Subsidiary.findByPk(id);
+  if (!subsidiary) {
     return res.status(404).send("Subsidiary not found");
   }
-  res.json(createdCategory);
+  subsidiary.activo = !subsidiary.activo;
+  await subsidiary.save();
+  res.json(subsidiary);
 });
 
 export default router;
