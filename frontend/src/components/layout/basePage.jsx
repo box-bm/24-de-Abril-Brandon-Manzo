@@ -7,11 +7,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { axiosInstance } from '../../config/axios';
 import AdminModal from './admiModal';
+import ModeIcon from '@mui/icons-material/Mode';
+
+import { axiosInstance } from '../../config/axios';
+import exportToXLSX from "../../utils/xlsx";
 
 const BasePage = (props) => {
-  const { columns, api, filterFunction, modalForm, onPressSave, onSelectedRow, resetForm } = props;
+  const { columns, api, filterFunction, modalForm, onPressSave, onSelectedRow, resetForm, fileName } = props;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEdditing] = useState(false);
@@ -41,12 +44,14 @@ const BasePage = (props) => {
   }
 
   const openModal = () => setIsModalOpen(true);
+
   const closeModal = () => {
     setIsModalOpen(false);
   }
 
-  const onPressSaveModal = () => {
-    onPressSave && onPressSave();
+  const onPressSaveModal = async () => {
+    onPressSave && await onPressSave();
+    fetchData();
     closeModal();
   }
 
@@ -67,11 +72,17 @@ const BasePage = (props) => {
     fetchData();
   }, [fetchData]);
 
+  const downloadExcel = () => {
+    exportToXLSX(searchValue
+      ? filterFunction(data, searchValue)
+      : data, fileName);
+  }
+
 
   return (
     <>
       <Grid container alignItems="center" sx={{ mb: 2 }}>
-        <Grid item xs={12} sm={10}>
+        <Grid item xs={12} sm={8}>
           <TextField
             sx={{ maxWidth: 500 }}
             fullWidth
@@ -96,18 +107,28 @@ const BasePage = (props) => {
             }}
           />
         </Grid>
-        <Grid item xs={12} sm={1}>
+        <Grid item xs={12} sm={1} justifyContent="flex-end">
           <IconButton onClick={reloadData} >{loading ? <CircularProgress /> : <ReplayIcon />}</IconButton>
+        </Grid>
+        <Grid item xs={12} sm={2}>
+          <Button fullWidth onClick={downloadExcel}>Exportar a excel</Button>
         </Grid>
         <Grid item xs={12} sm={1}>
           <Button fullWidth onClick={onClickNew}>Nuevo</Button>
         </Grid>
       </Grid>
       <DataGrid
+        sx={{ height: "70vh" }}
         loading={loading}
         rowSelection={false}
-        columns={columns}
-        onRowClick={(params) => rowClicked(params.row)}
+        columns={[
+          ...columns,
+          {
+            pinnable: true,
+            field: "id", headerName: "Acciones", renderCell: (values) =>
+              <IconButton onClick={() => rowClicked(values.row)}><ModeIcon /></IconButton>
+          }
+        ]}
         rows={searchValue
           ? filterFunction(data, searchValue)
           : data} />
@@ -125,6 +146,7 @@ const BasePage = (props) => {
 BasePage.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.any),
   api: PropTypes.string,
+  fileName: PropTypes.string,
   modalForm: PropTypes.node,
   filterFunction: PropTypes.func,
   onSelectedRow: PropTypes.func,

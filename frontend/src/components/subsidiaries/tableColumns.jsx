@@ -1,13 +1,14 @@
 import moment from "moment";
 import Switch from '@mui/material/Switch';
+import { axiosInstance } from "../../config/axios";
 
 export default [
   { headerName: "Nombre", field: "nombre", minWidth: 160, maxWidth: 500 },
-  { headerName: "Dirección", field: "dirección", minWidth: 160, maxWidth: 500 },
+  { headerName: "Dirección", field: "direccion", minWidth: 160, maxWidth: 500 },
   { headerName: "Correo", field: "correo", minWidth: 160, maxWidth: 500 },
   { headerName: "Departamento", field: "departamento", minWidth: 160, maxWidth: 500 },
   { headerName: "Municipio", field: "municipio", minWidth: 160, maxWidth: 500 },
-  { headerName: "Teléfono", field: "teléfono", minWidth: 160, maxWidth: 500 },
+  { headerName: "Teléfono", field: "telefono", minWidth: 160, maxWidth: 500 },
   {
     headerName: "Fecha de Creacion",
     field: "createdAt",
@@ -23,10 +24,10 @@ export default [
   {
     headerName: "Activo",
     field: "activo",
-    renderCell: (value) => (
+    renderCell: (row) => (
       <Switch
-        defaultChecked={value}
-        onChange={(value) => console.log(value.target.value)}
+        defaultChecked={row.value}
+        onChange={async () => await axiosInstance(`/api/subsidiaries/${row.id}/disactivate`, { method: "put" })}
       />
     ),
   },

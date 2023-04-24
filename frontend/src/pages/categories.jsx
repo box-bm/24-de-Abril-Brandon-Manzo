@@ -1,6 +1,6 @@
 import Form from "../components/categories/form";
 import columns from "../components/categories/tableColumns";
-import BasePage from "../components/layout/admin";
+import BasePage from "../components/layout/basePage";
 import { useFormik } from "formik";
 import { axiosInstance } from "../config/axios";
 import { useState } from "react";
@@ -45,6 +45,7 @@ const Categories = () => {
         onPressSave={form.submitForm}
         resetForm={form.resetForm}
         api="/api/categories"
+        fileName={"Categorias"}
         columns={columns}
         filterFunction={(data, filter) => data
           .filter((category) =>
