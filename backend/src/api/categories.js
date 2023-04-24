@@ -26,8 +26,10 @@ router.put("/:id", async (req, res) => {
   if (!category) {
     return res.status(404).send("Category not found");
   }
-  await category.update(data);
-  res.json(createdCategory);
+  category.categoria = data.categoria;
+  category.descripcion = data.descripcion;
+  await category.save();
+  res.json(category);
 });
 
 router.post("/", async (req, res) => {

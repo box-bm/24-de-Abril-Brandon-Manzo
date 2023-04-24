@@ -8,9 +8,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { axiosInstance } from '../../config/axios';
+import AdminModal from './admiModal';
 
 const BasePage = (props) => {
-  const { columns, api, filterFunction } = props;
+  const { columns, api, filterFunction, modalForm, onPressSave, onSelectedRow, resetForm } = props;
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEdditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("")
   const [data, setData] = useState([]);
@@ -34,6 +38,29 @@ const BasePage = (props) => {
   const reloadData = async () => {
     setData([]);
     fetchData();
+  }
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
+
+  const onPressSaveModal = () => {
+    onPressSave && onPressSave();
+    closeModal();
+  }
+
+  const onClickNew = () => {
+    setIsEdditing(false);
+    resetForm();
+    openModal();
+  }
+
+  const rowClicked = (values) => {
+    resetForm();
+    onSelectedRow && onSelectedRow(values);
+    openModal();
+    setIsEdditing(true);
   }
 
   useEffect(() => {
@@ -73,17 +100,24 @@ const BasePage = (props) => {
           <IconButton onClick={reloadData} >{loading ? <CircularProgress /> : <ReplayIcon />}</IconButton>
         </Grid>
         <Grid item xs={12} sm={1}>
-          <Button fullWidth>Nuevo</Button>
+          <Button fullWidth onClick={onClickNew}>Nuevo</Button>
         </Grid>
       </Grid>
       <DataGrid
         loading={loading}
         rowSelection={false}
         columns={columns}
-        disableRowSelectionOnClick
+        onRowClick={(params) => rowClicked(params.row)}
         rows={searchValue
           ? filterFunction(data, searchValue)
           : data} />
+
+      <AdminModal
+        isModalOpen={isModalOpen}
+        onClose={closeModal}
+        onPressSave={onPressSaveModal}
+        title={isEditing ? "Modificando" : "Nuevo registro"}
+        child={modalForm} />
     </>
   );
 }
@@ -91,7 +125,12 @@ const BasePage = (props) => {
 BasePage.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.any),
   api: PropTypes.string,
-  filterFunction: PropTypes.func
+  modalForm: PropTypes.node,
+  filterFunction: PropTypes.func,
+  onSelectedRow: PropTypes.func,
+  onPressSave: PropTypes.func,
+  resetForm: PropTypes.func,
+  onCloseModal: PropTypes.func,
 };
 
 export default BasePage;
